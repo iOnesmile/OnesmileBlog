@@ -21,10 +21,9 @@ owner:
   # Use the coder's toolbox at http://coderstoolbox.net/string/#!encoding=xml&action=encode&charset=us_ascii to encode your description into XML string
   description:    让生活有趣，工作、生活、学习和恋爱。
   # Social networking links used in footer. Update and remove as you like.
-  twitter:        iOnesmile
-  facebook:       iOnesmile
+  twitter:        iOnesmilePlus
+  facebook:       iOnesmilePlus
   github:         iOnesmile     
-  instagram:      iOnesmile
   weibo: iOnesmile  
   # For Google Authorship https://plus.google.com/authorship
   google_plus:    https://plus.google.com/u/0/109421230826858635986
