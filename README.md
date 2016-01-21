@@ -7,7 +7,7 @@ Main Features:
 * Fullscreen post covers with header wich will be bright or dark according to background image
 * Fast and light
 * Font Awesome
-* Disqus comments integration
+* Duoshuo comments integration
 
 You can set post image covers by using only Kramdown narkdown, just place something like this: `![cover-image](http://path-to-your-image.jpg)`
 
