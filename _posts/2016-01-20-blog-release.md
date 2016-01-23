@@ -3,7 +3,7 @@ layout: post
 title: "个人博客正式上线"
 modified: 2016-1-20 10:20:00
 excerpt: "开启我的博客之旅......"
-tags: [personal]
+tags: [Personal]
 comments: true
 ---
 开启我的博客之旅......
