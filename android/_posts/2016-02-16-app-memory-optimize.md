@@ -12,8 +12,8 @@ comments: true
 应用一般在使用的时间过长后，就很容易出现闪退的现象，在用AS调试后，发现应用的内存占用一直只增不减，当内存超过一定范围后就会闪退了。  
 好了，上面部分都是瞎扯的，可以忽略不计。
 
-##从以下几个方面，对应用进行优化
-####1，手动调用Bitmap的recycle()方法
+##从以下几个方面，对应用进行优化##
+####1，手动调用Bitmap的recycle()方法####
 由于Bitmap 的内存自动回收机制不是那么理想，往往要自己处理。如果是临时变量，在没有Bitmap对象时要即时调用recycle()释放，如果是Activity中的Bitmap对象，需要在onDestroy()中明确释放。
 
     if (mBitmap != null && !mBitmap.isRecycled()){
@@ -21,13 +21,13 @@ comments: true
         mBitmap = null;
     }
 
-####2，单例对象需要Context时，不要用Activity，而是ApplicationContext
+####2，单例对象需要Context时，不要用Activity，而是ApplicationContext####
 如果用Activity的引用，即便是在Activity销毁后，由于又静态变量引用着，它是不会销毁的，从而导致内存泄露。
 
-####3，在Activity销毁时，设置一个空的布局给界面，以便更快的清理。setContentView(R.layout.layout_null);
+####3，在Activity销毁时，设置一个空的布局给界面，以便更快的清理。setContentView(R.layout.layout_null);####
 此处是在讨论群上问的大神，大神给的答复。感觉用上去后会有一些作用，暂时不懂原理，等以后知道了再来补上。
 
-####4，Fragment销毁时，可以在onDestoryView()方法中，设置rootView的removeAllViews()方法，移除所有View。或设置一个新的View。
+####4，Fragment销毁时，可以在onDestoryView()方法中，设置rootView的removeAllViews()方法，移除所有View。或设置一个新的View。####
 我暂时的做法是在onDestoryView()时，移除所有的View来回收内存的。暂时这么写的，还不知道副作用，切用且珍惜
 
         if (rootView instanceof ViewGroup){
@@ -42,7 +42,7 @@ comments: true
             }
         }
 
-####5，在清单文件的Appliction节点上设置 android:largeHeap="true"
+####5，在清单文件的Appliction节点上设置 android:largeHeap="true"####
 Android设备出厂以后，java虚拟机对单个应用的最大内存分配就确定下来了，超出这个值就会OOM。这个属性值是定义在/system/build.prop文件中的  
 **dalvik.vm.heapstartsize=8m**　　　　它表示堆分配的初始大小，它会影响到整个系统对RAM的使用程度，和第一次使用应用时的流畅程度。
 
@@ -55,8 +55,10 @@ heapsize表示不受控情况下的极限堆，表示单个虚拟机或单个进
 
 此处参考：[http://blog.csdn.net/vshuang/article/details/39647167](http://blog.csdn.net/vshuang/article/details/39647167)
 
-####6，Fragment切换时的优化
-1，在Fragment切换时，用hide()、add()和show()方法代替replace()方法。参考[http://blog.csdn.net/jys1115/article/details/41725611?utm_source=tuicool&utm_medium=referral](http://blog.csdn.net/jys1115/article/details/41725611?utm_source=tuicool&utm_medium=referral "CSDN对Fragment切换的优化")  
+####6，Fragment切换时的优化####
+**1，在Fragment切换时，用hide()、add()和show()方法代替replace()方法。** 
+ 
+参考[http://blog.csdn.net/jys1115/article/details/41725611?utm_source=tuicool&utm_medium=referral](http://blog.csdn.net/jys1115/article/details/41725611?utm_source=tuicool&utm_medium=referral "CSDN对Fragment切换的优化")  
 
 之前代码  
 
@@ -103,8 +105,9 @@ heapsize表示不受控情况下的极限堆，表示单个虚拟机或单个进
 	}  
 
 
-2，fragment+viewpager的优化
-fragment在滑动时，会不断销毁和重建fragment，这样会比较影响性能。加入rootView,缓存加载后的view，如果有就不重新加载数据。加入判断是否已经加载数据完成的标志变量，如果已经加载了数据，就不重新加载数据。  
+**2，fragment+viewpager的优化**
+
+fragment在滑动时，会不断销毁和重建fragment，这样会比较影响性能。加入rootView,缓存加载后的view，如果有就不重新加载数据。加入判断是否已经加载数据完成的标志变量，如果已经加载了数据，就不重新加载数据。    
 参考：[http://blog.csdn.net/u013173289/article/details/44002371](http://blog.csdn.net/u013173289/article/details/44002371 "关于fragment+viewpager的优化")  
 
 	/** 

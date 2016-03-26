@@ -6,7 +6,7 @@ excerpt: "跳转到应用市场，对当前应用评分......"
 tags: [Android]
 comments: true
 ---
-###一、简单的介绍
+###一、简单的介绍###
 通过一个意图跳转到手机市场，如果有多个应用市场，系统会显示一个对话框来选择进入哪一个应用  
 
 	Intent intent = new Intent();
@@ -24,7 +24,7 @@ comments: true
 	ResolveInfo.loadLabel(getPackageManager()).toString()	// Label  
 	ResolveInfo.activityInfo.packageName	// PackageName  
 
-###二、代码具体实现
+###二、代码具体实现###
 
 	private String[] validPackageNames = new String[]{
 			// "com.android.vending",	// GooglePlay
@@ -135,8 +135,8 @@ comments: true
 	}
 
 
-###三、相关介绍
-#####1，通过PackageManager获取手机端已安装的apk文件的信息
+###三、相关介绍###
+#####1，通过PackageManager获取手机端已安装的apk文件的信息#####
 
 	PackageManager packageManager = this.getPackageManager();  
 	List<PackageInfo> packageInfoList = packageManager.getInstalledPackages(0);  
@@ -172,7 +172,7 @@ comments: true
     shareItem.setPackageName(pinfo.applicationInfo.packageName);  
 
 
-#####2，分享文本
+#####2，分享文本#####
 
 	Intent sendIntent = new Intent();  
 	sendIntent.setAction(Intent.ACTION_SEND);  

@@ -6,7 +6,7 @@ excerpt: "Android自定义View的基础介绍......"
 tags: [Android, View]
 comments: true
 ---
-###一、 View的生命周期
+###一、 View的生命周期###
 
 1. onFinishInflate() 当View中所有的子控件均被映射成xml后触发   
 2. onMeasure( int ,  int ) 确定所有子元素的大小 
@@ -35,9 +35,9 @@ comments: true
 1. onFinishInflate() 当View中所有的子控件均被映射成xml后触发   
 2. onLayout( boolean ,  int ,  int ,  int ,  int ) 当View分配所有的子元素的大小和位置时触发     
 
-###二、 Canvas简介
+###二、 Canvas简介###
 
-#### Canvas, 它相当于一个画布，你可以在里面画很多东西；  
+#### Canvas, 它相当于一个画布，你可以在里面画很多东西；  ####
 我们可以把这个Canvas理解成系统提供给我们的一块内存区域(但实际上它只是一套画图的API，真正的内存是下面的Bitmap)，而且它还提供了一整套对这个内存区域进行操作的方法，所有的这些操作都是画图API。也就是说在这种方式下我们已经能一笔一划或者使用Graphic来画我们所需要的东西了，要画什么要显示什么都由我们自己控制。  
 这种方式根据环境还分为两种：一种就是使用普通View的canvas画图，还有一种就是使用专门的SurfaceView的canvas来画图。两种的主要是区别就是可以在SurfaceView中定义一个专门的线程来完成画图工作，应用程序不需要等待View的刷图，提高性能。前面一种适合处理量比较小，帧率比较小的动画，比如说象棋游戏之类的；而后一种主要用在游戏，高品质动画方面的画图。
 
@@ -54,7 +54,7 @@ comments: true
 1. drawArc(RectF oval, float startAngle, float sweepAngle, boolean useCenter, Paint paint)//画弧，参数一是RectF对象，一个矩形区域椭圆形的界限用于定义在形状、大小、电弧，参数二是起始角(度)在电弧的开始，参数三扫描角(度)开始顺时针测量的，参数四是如果这是真的话,包括椭圆中心的电弧,并关闭它,如果它是假这将是一个弧线,参数五是Paint对象；
 
 
-####还要理解一个paint类：
+####还要理解一个paint类：####
 Class Overview  
 The Paint class holds the style and color information about how to draw geometries, text and bitmaps.
 
@@ -70,7 +70,7 @@ The Paint class holds the style and color information about how to draw geometri
 1. setUnderlineText(booleanunderlineText)  // 设置下划线
 
 
-###三、 Attr属性，在xml布局中引用以及自定义属性
+###三、 Attr属性，在xml布局中引用以及自定义属性###
 
 **1，自定义View的属性，首先在res/values/  下建立一个attrs.xml ， 在里面定义我们的属性和声明我们的整个样式。**
 
@@ -134,7 +134,7 @@ The Paint class holds the style and color information about how to draw geometri
 在xml布局文件中的View创建时会调用View的第二个构造函数，枚举类型我们通过getInt()来获取。
 
 
-###四、 一些常用的小技巧
+###四、 一些常用的小技巧###
 
 **1，让文字居中显示**
 
@@ -158,7 +158,7 @@ The Paint class holds the style and color information about how to draw geometri
 
 
 
-####参考资料：   
+####参考资料：   ####
 
 1. View的生命周期： [http://www.cnblogs.com/manbu/p/3583985.html?utm_source=tuicool&utm_medium=referral](http://www.cnblogs.com/manbu/p/3583985.html?utm_source=tuicool&utm_medium=referral)
 1. Android利用canvas画各种图形： [http://luoshui.blog.51cto.com/3683334/1575316](http://luoshui.blog.51cto.com/3683334/1575316)
