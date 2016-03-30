@@ -134,7 +134,7 @@ The Paint class holds the style and color information about how to draw geometri
 在xml布局文件中的View创建时会调用View的第二个构造函数，枚举类型我们通过getInt()来获取。
 
 
-###四、 一些常用的小技巧###
+**四、 一些常用的小技巧**
 
 **1，让文字居中显示**
 

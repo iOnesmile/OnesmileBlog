@@ -50,6 +50,8 @@ comments: true
 
 **七、实现代码如下**
 
+**Github Repositories：**  [https://github.com/iOnesmile/CustomEQView](https://github.com/iOnesmile/CustomEQView)
+
     import android.content.Context;
 	import android.graphics.Canvas;
 	import android.graphics.Paint;

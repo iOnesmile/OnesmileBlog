@@ -7,7 +7,7 @@ tags: [Personal, Blog]
 comments: true
 ---  
 
-##工作流程##
+**工作流程**
 
 1，在GitHub上创建一个'gh-pages'仓库，或直接Fork一个它人的博客仓库。   
 2，申请一个域名   
@@ -16,6 +16,7 @@ comments: true
 5，一些有用的小图标，___[http://fontawesome.dashgame.com](http://fontawesome.dashgame.com)___
 
 
-##其它小点##
+**其它小点**  
+
 1，用腾讯分析来统计你的网站访问情况   ___[http://ta.qq.com](http://ta.qq.com)___    
 2，用多说来实现自己博客的评论或留言功能。
