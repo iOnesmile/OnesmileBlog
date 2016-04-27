@@ -48,7 +48,7 @@ comments: true
 		}
 	}
 
-
+   
 
 **2，快速生成Drawable/Selector文件**
 
@@ -151,4 +151,96 @@ comments: true
 			return sb.toString();
 		}
 	}
+
+
+**3，替换icon图标**  
+
+	/**
+	 * 替换目标文件（目标文件/源文件夹名/iconName(内容为源文件)）
+	 * 如：C:\Users\Administrator\Desktop\target\drawable-hdpi\ic_launcher.png
+	 * 
+	 * @author iOnesmile
+	 *
+	 */
+	public class IconReplaceTest {
+	
+		public static void main(String[] args) {
+			String sourceIconPath = "C:\\Users\\Administrator\\Desktop\\icon";
+			String targetIconPath = "C:\\Users\\Administrator\\Desktop\\target";
+			String iconName = "ic_launcher.png";
+			
+			replaceFile(sourceIconPath, targetIconPath, iconName);
+		}
+	
+		/**
+		 * 替换目标文件（目标文件/源文件夹名/iconName(内容为源文件)）
+		 * @param sourceIconPath	源文件路径
+		 * @param targetIconPath	目标文件路径
+		 * @param iconName			源文件下要替换的图标名
+		 */
+		private static void replaceFile(String sourceIconPath, String targetIconPath, String iconName) {
+			// 获取源文件下所有文件，并迭代
+			File[] sourceFiles = new File(sourceIconPath).listFiles();
+			for (File itemFile : sourceFiles) {
+				if (itemFile.isDirectory()) {
+					// 获取文件夹名称
+					String fileName = itemFile.getName();
+					// 文件夹下的第一个为icon图标
+					File iconFile = itemFile.listFiles()[0];
+					System.out.println(iconFile.getAbsolutePath());
+					// 目标文件 = 目标路径 + icon文件夹名称 + icon名称
+					itemFile = new File(targetIconPath, fileName);
+					// 判断目标文件路径是否存在，只有存在时才替换为本地icon
+					if (itemFile.exists()) {
+						itemFile = new File(itemFile, iconName);
+						System.out.println(itemFile.getAbsolutePath());
+						// 复制文件
+						copyFile(iconFile, itemFile);
+					}
+				}
+			}
+		}
+	
+		/**
+		 * 复制文件
+		 * @param source	源文件
+		 * @param target	目标文件
+		 */
+		private static void copyFile(File source, File target) {
+			BufferedInputStream bis = null;
+			BufferedOutputStream bos = null;
+			try {
+				// 判断目标路径是否存在，不存在时创建
+				if(!target.getParentFile().exists()){
+					target.getParentFile().mkdirs();
+				}
+				// 创建Buffer输入输出流，然后读写数据
+				bis = new BufferedInputStream(new FileInputStream(source));
+				bos = new BufferedOutputStream(new FileOutputStream(target));
+				byte[] buff = new byte[1024 * 4];
+				int len = 0;
+				while ((len = bis.read(buff)) != -1) {
+					bos.write(buff, 0, len);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (bis != null) {
+					try {
+						bis.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				if (bos != null) {
+					try {
+						bos.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
 
