@@ -3,7 +3,7 @@ layout: post
 title: "自定义取色盘（上）"
 modified: 2016-5-31 16:28:00
 excerpt: "一个取色盘，通过拖动中间的按钮来获取按钮上标示所指示的颜色值"
-tags: [Android, View，ColorPlate]
+tags: [Android, View, ColorPlate]
 comments: true
 ---
 
