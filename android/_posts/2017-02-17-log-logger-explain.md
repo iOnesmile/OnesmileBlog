@@ -83,19 +83,19 @@ methodCount：
 
 #### 1，默认的设置，效果如下：
 
-<img src="./images/logger_print_sample.png"/>
+<img src="http://www.ionesmile.com/images/android/logger_print_sample.png"/>
 
 #### 2，不显示方法数和线程信息，效果如下：
 
 	Logger.init().methodCount(0).hideThreadInfo();
 
-<img src="./images/logger_print_sample_only_message.png"/>
+<img src="http://www.ionesmile.com/images/android/logger_print_sample_only_message.png"/>
 
 #### 3，Json 排版效果：
 
 	Logger.json(YOUR_JSON_DATA);
 
-<img src="./images/logger_print_json.png"/>
+<img src="http://www.ionesmile.com/images/android/logger_print_json.png"/>
 
 
 ### 三、日志打印规范
@@ -114,16 +114,13 @@ methodCount：
 
 #### 2，标点符号的使用   
 
-- 表示一个进行中的过程用 ... 结尾：
-
+- 表示一个进行中的过程用 ... 结尾：   
 	Starting a process...
 
-- 表示错误用 ! 结尾：
-
+- 表示错误用 ! 结尾：   
 	The name has more than 1 record!
 
-- 正常语句用 . 结尾, 例：
-
+- 正常语句用 . 结尾, 例：   
 	Received an example event.
 
 
@@ -138,12 +135,10 @@ methodCount：
 
 - 将你认为重要但不是错误的信息打到ERROR里面
 
-- 过于宽泛化的描述，比如:
-
+- 过于宽泛化的描述，比如:   
 	log.debug("start processing...)
 
-- 应该更明确地记录操作,比如:
-
+- 应该更明确地记录操作,比如:   
 	log.debug("start retrive endpoint data processing...")
 
 - 尽量减少使用print或者用log往终端打印信息。
@@ -151,6 +146,7 @@ methodCount：
 
 　   
 > 参考资料：   
+> 
 > <http://www.jianshu.com/p/8551fe9c6354> (LOG使用规范)   
 > <https://github.com/alaudacloud/style-guides/blob/master/logs.md>   
 > <http://blog.jobbole.com/56574/> (王健：最佳日志实践)   
