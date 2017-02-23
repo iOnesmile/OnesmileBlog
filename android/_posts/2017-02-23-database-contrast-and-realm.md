@@ -1,0 +1,304 @@
+---
+layout: post
+title: "Android 数据库对比"
+modified: 2017-2-23 10:00:00
+excerpt: "Android 数据库对比和 Realm 数据库的使用..."
+tags: [Android, Realm]
+comments: true
+---
+
+## Android 数据库对比   
+
+#### 一、常见数据库介绍   
+
+- **[GreenDao](https://github.com/greenrobot/greenDAO)** 是为Android设计的对象关系映射（ORM）工具。它提供了对象到关系型数据库SQLite的相应接口。为了在Android工程中使用greenDao，需要创建另一个“生成器”工程，它的任务是在你的工程域里生成具体的代码。因此相比与其它ORM框架具有出众性能。   
+
+- **[LitePal](https://github.com/LitePalFramework/LitePal)** 是对象关系映射(ORM)模型。它使开发者使用SQLite数据库变得非常容易。 你可以不用写一句SQL语句就可以完成大部分数据库操作，包括创建表，更新表，约束操作，聚合功能等等。   
+
+- **[Afinal](https://github.com/yangfuhai/afinal)** 是一个android的sqlite orm 和 ioc 框架。同时封装了android中的http框架，使其更加简单易用。FinalDB模块，android中的orm框架，一行代码就可以进行增删改查。支持一对多，多对一等查询。   
+
+- **[ORMLite](https://github.com/j256/ormlite-android)** （Object Relational Mapping Lite）提供了一些轻量级持久化Java对象到SQL数据库，同时也避免了复杂性和更多的标准的ORM包的开销功能。它支持的SQL数据库使用JDBC的数量，还支持原生的Android操作系统数据库API调用sqlite。     
+
+- **[SugarORM](https://github.com/satyan/sugar)** 是对象关系映射模式。不用写复杂的sql语句，而用简单的API即可完成创建和操纵数据；可以在原有的Bean上仅仅添加小的修改而复用Bean；简化而明了的数据库设计和创建过程，同时提供表的一对多的支持。   
+
+- **[Realm](https://github.com/realm/realm-java)** 是用来替代sqlite的一种解决方案，它有一套自己的数据库存储引擎，比sqlite更轻量级，拥有更快的速度，并且具有很多现代数据库的特性，比如支持JSON，流式api，数据变更通知，自动数据同步,简单身份验证，访问控制，事件处理，最重要的是跨平台，目前已有Java，Objective C，Swift，React-Native，Xamarin这五种实现。   
+
+- **[LiteOrm](https://github.com/litesuits/android-lite-orm)** 是android上的一款数据库（ORM）框架库。速度快、体积小、性能高。开发者基本一行代码实现数据库的增删改查操作，以及实体关系的持久化和自动映射。设计原则：轻量、专注、性能优先、线程无关，专注数据及其关系存储和操作；无需工具辅助，不需要无参构造，不需要繁多注解，约定优于配置；使用极致简约，例如：db.save(u); db.query(U.class); db.deleteAll(U.class);。   
+
+- **[DBFlow](https://github.com/Raizlabs/DBFlow)** 综合了 ActiveAndroid, Schematic, Ollie,Sprinkles 等库的优点。同时不是基于反射，所以性能也是非常高，效率紧跟greenDAO其后。基于注解，使用apt技术，在编译过程中生成操作类，使用方式和ActiveAndroid高度相似，使用简单。无缝支持多个数据库，使用annotation processing提高速度，ModelContainer类库可以直接解析像JSON这样的数据，增加灵活性的丰富接口。   
+
+- **[ActiveAndroid](https://github.com/pardom/ActiveAndroid)** 是采用活动记录(Active Record)架构模式设计的适用于Android平台的轻量级ORM架构。
+
+#### 二、数据库性能比较   
+
+仔细找了一下发现 Android 平台上的数据库框架可真够多，但是有一个共同特点就是基于对象关系映射**[(ORM)](https://en.wikipedia.org/wiki/Object-relational_mapping)**模型的。实现的目标也都是不需要写 SQL 语句，通过对对象的操作保存和操作数据。要是从语法的简洁性来说都有自己的特点，总的来说不相上下，因此只能从数据的性能上来抉择了。下图对数据库执行性能进行了对比，测试数据来自<http://www.jianshu.com/p/330bbd3b0e68>：   
+
+<img src="http://www.ionesmile.com/images/android/database_option_time_compare.jpg"/>
+
+从图中可以看出 Realm 的性能应该是最好的，同时它执行跨平台，且并不是采用 SQLite 的持久化引擎。
+
+#### 三、Realm 数据库的使用    
+
+Realm 官方文档：<https://realm.io/docs/java/latest/>   
+
+##### 1，环境配置
+
+1. 在项目的 build.gradle 加入如下代码：
+
+		buildscript {
+		    repositories {
+		        jcenter()
+		    }
+		    dependencies {
+		        classpath "io.realm:realm-gradle-plugin:2.3.1"
+		    }
+		}
+
+2. 在主工程 app 目录下的 build.gradle 的文件顶部加入如下代码：
+
+		apply plugin: 'realm-android'
+
+
+##### 2，自定义 Realm
+
+1. 创建数据库
+
+		// 使用 RealmConfiguration 配置数据库
+		// Realm 文件将创建在 Context.getFilesDir() 目录下，名字为 "myrealm.realm"   
+		RealmConfiguration config = new RealmConfiguration.Builder()
+		  .name("myrealm.realm")
+		  .encryptionKey(getKey())
+		  .schemaVersion(1)
+		  .modules(new MySchemaModule())
+		  .migration(new MyMigration())
+		  .build();
+		// 使用配置，获取一个 Realm 实例
+		Realm realm = Realm.getInstance(config);
+
+2. 数据库版本升级   
+
+		// 当数据表结构改变时，删除数据库
+		RealmConfiguration config = new RealmConfiguration.Builder()
+		    .deleteRealmIfMigrationNeeded()
+		    .build()
+
+		// 更新数据
+		RealmConfiguration config = new RealmConfiguration.Builder()
+		    .schemaVersion(2) // 数据表改变时，必须修改版本号
+		    .migration(new Migration()) // 设置在合并数据库时的修改
+		    .build()
+
+		public class Migration implements RealmMigration {
+		    @Override
+		    public void migrate(final DynamicRealm realm, long oldVersion, long newVersion) {
+				// ...
+		    }
+		}	
+
+##### 3，创建实体表   
+
+1. 创建一个实体类   
+
+		public class Dog extends RealmObject {
+		    private String name;
+		    private int age;
+		
+		    @PrimaryKey
+		    private String id;
+		
+			// ... 设置和获取方法省略
+		}
+
+2. 当包含多个时用 RealmList<T>，如一个联系人包括多个邮件地址，如下：   
+
+		public class Contact extends RealmObject {
+		    public String name;
+		    public RealmList<Email> emails;
+		}
+		
+		public class Email extends RealmObject {
+		    public String address;
+		    public boolean active;
+		}
+
+3. 支持的数据类型：     
+	boolean, byte, short, int, long, float, double, String, Date and byte[]
+
+4. 注解说明   
+
+	- **@PrimaryKey**     
+		1. 设置主键，字段类型必须是String、 integer、byte、short、 int、long 以及它们的封装类Byte, Short, Integer, and Long   
+		2. 使用了该注解之后可以使用copyToRealmOrUpdate()方法，通过主键查询它的对象，如果查询到了，则更新它，否则新建一个对象来代替。   
+		3. 使用了该注解将默认设置 @index 注解   
+		4. 使用了该注解之后，创建和更新数据将会慢一点，查询数据会快一点。   
+
+	- **@Required**    
+		数据不能为空
+
+	- **@Ignore**     
+		忽略，即该字段不被存储到本地    
+
+	- **@Index**   
+		为这个字段添加一个搜索引擎，这将使插入数据变慢、数据增大，但是查询会变快。建议在需要优化读取性能的情况下使用。     
+
+##### 4，添加
+
+1. 通过 Realm 新建一个对象，并进行存储
+
+		realm.beginTransaction();
+		User user = realm.createObject(User.class); // 通过 Realm 新建一个对象
+		user.setName("John");
+		user.setEmail("john@corporation.com");
+		realm.commitTransaction();
+
+2. 复制一个对象到Realm数据库（与第一种方式的不同之处在于 User 对象是 new 出来的）
+
+		User user = new User("John");
+		user.setEmail("john@corporation.com");
+		
+		// Copy the object to Realm. Any further changes must happen on realmUser
+		realm.beginTransaction();
+		realm.copyToRealm(user);
+		realm.commitTransaction();
+
+3. 使用事务块    
+
+		final User user = new User("John");
+		user.setEmail("john@corporation.com");
+		
+		mRealm.executeTransaction(new Realm.Transaction() {
+		            @Override
+		            public void execute(Realm realm) {
+		
+		            realm.copyToRealm(user);
+		
+		            }
+		        });
+
+
+
+> 注：Realm 的增删改查操作都必须是在事务中进行。
+
+##### 5，删除    
+
+		final RealmResults<Dog> dogs = mRealm.where(Dog.class).findAll();
+		
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+
+                Dog dog=dogs.get(5);
+                dog.deleteFromRealm();
+                //删除第一个数据
+                dogs.deleteFirstFromRealm();
+                //删除最后一个数据
+                dogs.deleteLastFromRealm();
+                //删除位置为1的数据
+                dogs.deleteFromRealm(1);
+                //删除所有数据
+                dogs.deleteAllFromRealm();
+            }
+        });
+
+> 或使用 beginTransaction() 和 commitTransaction() 的方式进行操作也是一样的。
+
+##### 6，修改
+
+		Dog dog = mRealm.where(Dog.class).equalTo("id", id).findFirst();
+		mRealm.beginTransaction();
+		dog.setName(newName);
+		mRealm.commitTransaction();
+
+##### 7，查询
+
+1. 全部查询，查询结果为 RealmResults<T>，可以使用 mRealm.copyFromRealm(dogs) 方法将它转为 List<T>   
+	
+		public List<Dog> queryAllDog() {
+	        Realm  mRealm = Realm.getDefaultInstance();
+	        RealmResults<Dog> dogs = mRealm.where(Dog.class).findAll();
+	        return mRealm.copyFromRealm(dogs);
+	    }
+
+2. 条件查询
+
+	    public Dog queryDogById(String id) {
+	        Realm  mRealm = Realm.getDefaultInstance();
+	        Dog dog = mRealm.where(Dog.class).equalTo("id", id).findFirst();
+	        return dog;
+	    }
+
+3. 支持的条件查询语句   
+
+	- between(), greaterThan(), lessThan(), greaterThanOrEqualTo() & lessThanOrEqualTo()
+	- equalTo() & notEqualTo()
+	- contains(), beginsWith() & endsWith()
+	- isNull() & isNotNull()
+	- isEmpty() & isNotEmpty()
+
+4. 其它对查询结果的操作   
+
+	- sort()
+	- sum()
+	- min()
+	- max()
+	- average()
+
+##### 8，异步操作   
+
+大多数情况下，Realm的增删改查操作足够快，可以在UI线程中执行操作。但是如果遇到较复杂的增删改查，或增删改查操作的数据较多时，就可以子线程进行操作。   
+
+	RealmAsyncTask asyncTask = mRealm.executeTransactionAsync(new Realm.Transaction() {
+        @Override
+        public void execute(Realm realm) {
+            // ... do something
+        }
+    }, new Realm.Transaction.OnSuccess() {
+        @Override
+        public void onSuccess() {
+            
+        }
+    }, new Realm.Transaction.OnError() {
+        @Override
+        public void onError(Throwable error) {
+            
+        }
+    });
+
+在窗体销毁时，记得要取消异步任务：
+
+	protected void onDestroy() {
+		if (asyncTask!=null && !asyncTask.isCancelled()){
+		    asyncTask.cancel();
+		}
+	}
+
+
+##### 9，数据变更通知   
+
+	private RealmChangeListener callback = new RealmChangeListener() {
+	    @Override
+	    public void onChange(RealmResults<User> results) {
+	        // called once the query complete and on every update
+	    }
+	};
+	
+	public void onStart() {
+	    RealmResults<User> result = realm.where(User.class).findAllAsync();
+	    result.addChangeListener(callback);
+	}
+
+记得取消监听，在 Fragment 或 Activity 退出时，避免内存泄露     
+
+	public void onStop () {
+	    result.removeChangeListener(callback); // 移除指定的监听
+	    // 或
+	    result.removeChangeListeners(); // 移除注册的所有监听
+	}
+
+
+> 这里列举了 Realm 使用的大部分方法，还有部分待后续补充。
+
+
+　　      
+参考文章： <http://www.jianshu.com/p/28912c2f31db#>
+

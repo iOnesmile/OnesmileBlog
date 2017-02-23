@@ -55,7 +55,10 @@ comments: true
 **运用《代码大全》、《google java编码规范》，《代码整洁之道》等资料的规范和技巧，提升项目的简洁度和可扩展性，推进公司项目的模块化；**   
 深入项目框架的设计，重构和改善既有代码的设计。   
 
-### 2，学习一门脚本语言 Python    
+### 2，学习 Python 语言   
+
+1. 写一个简单的爬虫   
+2. 研究人工智能系统 [TensorFlow](https://github.com/tensorflow/tensorflow)，能理解大概的脉络     
 
 ### 3，其它计划  
 
