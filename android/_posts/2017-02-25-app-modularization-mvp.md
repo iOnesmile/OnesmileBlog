@@ -20,16 +20,16 @@ comments: true
 
 - **MVP** 从更早的MVC框架演变过来，与MVC有一定的相似性：Controller/Presenter负责逻辑的处理，Model提供数据，View负责显示。在MVP模式里通常包含3个要素（加上View interface是4个）：  
  
-	<img src="http://www.ionesmile.com/images/android/mvp_structure_chart.png" width=300/>  
-	
-	- **View：**负责绘制 UI 元素、与用户进行交互(在 Android 中体现为 Activity)   
-	- **Model：**负责存储、检索、操纵数据(有时也实现一个 Model interface 用来降低耦合)   
-	- **Presenter：**作为 View 与 Model 交互的中间纽带，处理与用户交互的负责逻辑   
-	- **View interface：**需要 View 实现的接口，View 通过 View interface 与 Presenter 进行交互，降低耦合，方便进行单元测试   
+<img src="http://www.ionesmile.com/images/android/mvp_structure_chart.png" width=300/>  
+
+- **View：**负责绘制 UI 元素、与用户进行交互(在 Android 中体现为 Activity)   
+- **Model：**负责存储、检索、操纵数据(有时也实现一个 Model interface 用来降低耦合)   
+- **Presenter：**作为 View 与 Model 交互的中间纽带，处理与用户交互的负责逻辑   
+- **View interface：**需要 View 实现的接口，View 通过 View interface 与 Presenter 进行交互，降低耦合，方便进行单元测试   
 
 - **MVVM** 模式将 Presenter 改名为 ViewModel，基本上与 MVP 模式完全一致。唯一的区别是，它采用双向绑定（data-binding）：View的变动，自动反映在 ViewModel，反之亦然。这就使得视图和控制层之间的耦合程度进一步降低，关注点分离更为彻底，同时减轻了Activity的压力。   
 
-	<img src="http://www.ionesmile.com/images/android/mvvm_structure_chart.png" width=200/>  
+<img src="http://www.ionesmile.com/images/android/mvvm_structure_chart.png" width=200/>  
 
 #### 二、如何构建一个 MVP 的框架   
 
