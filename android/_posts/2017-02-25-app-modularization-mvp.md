@@ -32,122 +32,133 @@ comments: true
 
 #### 二、如何构建一个 MVP 的框架   
 
-先看我写的一个 MVP 的框架，如下图：  
+##### 1，[TodoMVP](https://github.com/googlesamples/android-architecture/tree/todo-mvp/) 框架结构   
 
-<img src="http://www.ionesmile.com/images/android/mvp_demo_treelist.png"/>  
+<img src="http://www.ionesmile.com/images/android/todo_mvp_demo_main_construct.png"/>   
 
-- UI 采用 DataBinding 的方式，把 View 和 Data 绑定在一起   
-- 网络采用 Retrofit + RxJava 的方式实现   
-- 包名用 ui、presenter 和 data 隔离  
+有如下几个步骤：  
+1. 在 Activity 中初始化 Fragment 和 Presenter 的实例，并给 Fragment 设置 Presenter   
+2. Fragment 实现了 View 的接口，并拥有 Presenter 的引用，Fragment 的非 UI 操作都通过调用 Presenter 来实现，同时 Presenter 把处理好的结果通过回调 View 回传给 Fragment 显示   
+3. Presenter 拥有 View 的引用，具体的处理事情并回调 View 返回接口   
 
-MainActivity 代码如下：
+正因为 UI 与具体实现相分离，使 Activity 只需要根据回传状态渲染 UI，Presenter 中也只用考虑处理逻辑，将处理好的状态告知 View 即可。在应用 UI 经常变更时会有非常大的优势。   
 
-	public class MainActivity extends BaseActivity<MainActivityBinding> implements ISearchView {
+
+##### 2，写一个简单的搜索 Demo，输入关键字，在点击搜索按钮时开始搜索，并将返回结果显示出来。   
+
+SearchContract 的实现，View 中包含搜索成功和搜索失败的回调，Presenter 中主要是搜索方法和 Activity 生命周期的方法。   
+
+	public interface SearchContract {
 	
-	    private SearchPresenter searchPresenter;
+	    interface View extends BaseView<SearchContract.Presenter> {
+	
+	        void onSearchSuccess(String result);
+	
+	        void onSearchFailure(String message);
+	    }
+	
+	    interface Presenter extends BasePresenter {
+	
+	        void stop();
+	
+	        void startSearch(String searchKey);
+	    }
+	}
+
+在 MainActivity 中实现了 SearchContract.View，并创建 SearchPresenter 实例和初始化 UI。   
+
+	public class MainActivity extends AppCompatActivity implements SearchContract.View {
+	
+	    private SearchContract.Presenter mPresenter;
+	
+	    private EditText etSearchKey;
+	    private TextView tvResult;
 	
 	    @Override
-	    protected int getLayoutId() {
-	        return R.layout.activity_main;
+	    protected void onCreate(Bundle savedInstanceState) {
+	        super.onCreate(savedInstanceState);
+	        setContentView(R.layout.activity_main);
+	
+	        new SearchPresenter(this, new DataManager());
+	
+	        etSearchKey = (EditText) findViewById(R.id.et_search_key);
+	        tvResult = (TextView) findViewById(R.id.tv_result);
+	
+	        findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	                String searchKey = etSearchKey.getText().toString();
+	                if (TextUtils.isEmpty(searchKey)) {
+	                    showToast("搜索关键字不能为空！");
+	                    return;
+	                }
+	                mPresenter.startSearch(searchKey);
+	            }
+	        });
 	    }
 	
 	    @Override
-	    protected void initBase() {
-	        searchPresenter = new SearchPresenter();
-	        searchPresenter.onCreate();
-	        searchPresenter.attachView(this);
+	    public void onResume() {
+	        super.onResume();
+	        mPresenter.start();
 	    }
 	
 	    @Override
-	    protected void initUI() {
-	
-	    }
-	
-	    @Override
-	    protected void initData() {
-	        rootBinding.setKeyword("com.chipsguide.demo.cloudmusic");
-	    }
-	
-	    @Override
-	    protected void initListener() {
-	        rootBinding.setClickListener(this);
-	    }
-	
-	    @Override
-	    protected void onDestroy() {
-	        super.onDestroy();
-	        searchPresenter.onStop();
-	    }
-	
-	    @Override
-	    public void onClick(View view) {
-	        switch (view.getId()){
-	            case R.id.btn_search:
-	                searchPresenter.startSearch();
-	                break;
-	        }
-	    }
-	
-	    @Override
-	    public String getSearchKey() {
-	        return rootBinding.getKeyword();
+	    protected void onStop() {
+	        super.onStop();
+	        mPresenter.stop();
 	    }
 	
 	    @Override
 	    public void onSearchSuccess(String result) {
-	        rootBinding.setResult(result);
+	        tvResult.setText(result);
 	    }
 	
 	    @Override
 	    public void onSearchFailure(String message) {
-	        rootBinding.setResult(message);
+	        tvResult.setText(message);
+	    }
+	
+	    @Override
+	    public void setPresenter(SearchContract.Presenter presenter) {
+	        mPresenter = presenter;
+	    }
+	
+	    public void showToast(String message) {
+	        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 	    }
 	}
 
-SearchView 代码如下：   
+创建 SearchPresenter 实现 SearchContract.Presenter 接口，其中的搜索方法通过调用 Model 层的接口获取数据，并处理完结果后将状态回调给 View。   
 
-	public interface ISearchView extends IBaseView {
+	public class SearchPresenter implements SearchContract.Presenter {
 	
-	    String getSearchKey();
-	
-	    void onSearchSuccess(String result);
-	
-	    void onSearchFailure(String message);
-	}
-
-SearchPresenter 代码如下：   
-
-	public class SearchPresenter implements Presenter {
-	
-	    private ISearchView searchView;
+	    private SearchContract.View searchView;
 	    private CompositeSubscription mCompositeSubscription;
 	    private DataManager dataManager;
 	    private String mResult;
 	
-	    @Override
-	    public void onCreate() {
-	        mCompositeSubscription = new CompositeSubscription();
-	        dataManager = new DataManager();
+	    public SearchPresenter(SearchContract.View searchView, DataManager dataManager) {
+	        this.searchView = searchView;
+	        this.dataManager = dataManager;
+	
+	        this.searchView.setPresenter(this);
 	    }
 	
 	    @Override
-	    public void onStop() {
-	        if (mCompositeSubscription.hasSubscriptions()){
+	    public void start() {
+	        mCompositeSubscription = new CompositeSubscription();
+	    }
+	
+	    @Override
+	    public void stop() {
+	        if (mCompositeSubscription.hasSubscriptions()) {
 	            mCompositeSubscription.unsubscribe();
 	        }
 	    }
 	
 	    @Override
-	    public void attachView(IBaseView baseView) {
-	        this.searchView = (ISearchView) baseView;
-	    }
-	
-	    public void startSearch(){
-	        final String searchKey = searchView.getSearchKey();
-	        if (TextUtils.isEmpty(searchKey)) {
-	            searchView.showToast("搜索关键字不能为空！");
-	            return;
-	        }
+	    public void startSearch(String searchKey) {
 	        mCompositeSubscription.add(dataManager.getSearchResult(searchKey)
 	                .subscribeOn(Schedulers.io())
 	                .observeOn(AndroidSchedulers.mainThread())
