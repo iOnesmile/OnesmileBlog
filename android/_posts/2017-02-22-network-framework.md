@@ -168,7 +168,7 @@ Volley 是 Google 在 2013 年推出的 Android 异步网络请求框架和图�
 	* Okhttp 源码分析：   
 	　　<http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0326/2643.html>       
 	　　
-	* Volley 源码解析： 
+	* Volley 源码解析：    
 	　　<http://a.codekk.com/detail/Android/grumoon/Volley%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90>   
 
 	* 教你写Android网络框架之基本架构   
