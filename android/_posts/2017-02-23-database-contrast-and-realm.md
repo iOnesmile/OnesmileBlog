@@ -298,6 +298,38 @@ Realm 官方文档：<https://realm.io/docs/java/latest/>
 
 > 这里列举了 Realm 使用的大部分方法，还有部分待后续补充。
 
+### 补充
+
+一、在工作中遇到多个 `Library` 工程同时使用 `Realm` 数据库的情况，此时会出现如下异常：
+
+```java
+com.android.build.api.transform.TransformException: java.util.zip.ZipException: duplicate entry: io/realm/DefaultRealmModule.class
+```
+
+解决办法：通过 `RealmConfiguration.modules()` 方法设置 `RealmModule`，来曝光库工程结构。[见官网](https://realm.io/docs/java/latest/#sharing-schemas)
+
+```java
+// Library must create a module and set library = true. This will prevent the default
+// module from being created.
+// allClasses = true can be used instead of listing all classes in the library.
+@RealmModule(library = true, allClasses = true)
+public class MyLibraryModule {
+}
+
+// Library projects are therefore required to explicitly set their own module.
+RealmConfiguration libraryConfig = new RealmConfiguration.Builder()
+  .name("library.realm")
+  .modules(new MyLibraryModule())
+  .build();
+
+// Apps can add the library RealmModule to their own schema.
+RealmConfiguration config = new RealmConfiguration.Builder()
+  .name("app.realm")
+  .modules(Realm.getDefaultModule(), new MyLibraryModule())
+  .build();
+```
+
+提示：设置 `RealmModule` 后记得 `Clean` 工程！！！
 
 　　      
 参考文章： <http://www.jianshu.com/p/28912c2f31db#>
