@@ -7,6 +7,18 @@ tags: [Kotlin]
 comments: true
 ---
 
+
+中文网站：	<https://www.kotlincn.net/docs/reference/>
+
+> 在线测试： <https://try.kotlinlang.org>
+
+> 或使用 IDEA 开发工具：   
+> 下载： <https://www.jetbrains.com/idea/download/#section=windows>   
+> 入门文档：<https://www.kotlincn.net/docs/tutorials/getting-started.html>
+
+
+### 概述
+
 - Kotlin 用于服务器端
 	
 	语言什么都很厉害，完全可以代替 Java。有服务端的开发框架，如 Spring。可以部署在支持 JavaWeb 的任何主机。
