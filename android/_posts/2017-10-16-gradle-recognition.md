@@ -2,7 +2,7 @@
 layout: post
 title: "重新认识 Gradle 打包"
 modified: 2017-10-16 10:18:00
-excerpt: "Gradle 是什么，Android 打包插件，AAR 文件，AS 如何快速打包..."
+excerpt: "Gradle 是什么，Android 打包插件，AAR 文件，依赖冲突解决办法，AS 如何快速打包..."
 tags: [Gradle]
 comments: true
 ---
@@ -66,7 +66,56 @@ apply plugin: 'com.android.library'
 - res
 
 
-### 四、Android Studio 如何快速运行程序
+
+### 四、依赖冲突的解决办法
+
+在集成多个库工程时，出现了如下异常：
+
+```
+java.lang.NoSuchMethodError: android.support.v4.app.ActivityCompat.startActivity
+```
+
+很明显是 support 包冲突的问题，查看 `gradle.build` 文件，在 `dependencies` 中有如下警告信息：
+
+```
+All com.android.support libraries must use the exact same version specification (mixing versions can lead to runtime crashes).
+Found versions 25.2.0, 24.0.0. Examples include com.android.support:animated-vector-drawable:25.2.0 and com.android.support:mediarouter-v7:24.0.0
+```
+
+提示存在多个版本，可能会导致运行时错误，需要使用同一个版本。解决办法：
+
+- 通过 `./gradlew dependencies` 或 `gradle dependencies` 查看依赖树
+
+- 可以使用 `exclude` 关键字来排除单个的库工程，如：
+
+	```
+	compile('com.yanzhenjie:recyclerview-swipe:1.0.3') {
+  		exclude group: 'com.android.support', module: 'recyclerview-v7'
+	}
+	```
+	
+- 可以使用全局的方式替换，在根目录的 build.gradle 文件中，代码如下：
+
+	```
+	subprojects {
+	    project.configurations.all {
+	        resolutionStrategy.eachDependency { details ->
+	            if (details.requested.group == 'com.android.support'
+	                    && details.requested.name.contains('appcompat-v7') ) {
+	                details.useVersion "24.2.0"
+	            }
+	        }
+	    }
+	}
+	```
+	并且在项目中可见的地方，修改为相同的版本号，并 `sync project gradle`
+	
+参考：   
+[the-exact-same-version-specification](https://stackoverflow.com/questions/42374151/all-com-android-support-libraries-must-use-the-exact-same-version-specification)    
+[the-exact-same-version/42582204#42582204](https://stackoverflow.com/questions/42581963/all-com-android-support-libraries-must-use-the-exact-same-version/42582204#42582204)
+
+
+### 五、Android Studio 如何快速运行程序
 
 运行速度严重影响了开发效率，虽然换 MBP 后比以前的运行速度提高了三倍，但还是不够满意。提高速度主要有如下几个方法：
 
