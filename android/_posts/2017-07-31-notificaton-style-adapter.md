@@ -224,6 +224,47 @@ public static int getCompoundColor(int alpha, int color) {
 }
 ```
 
+#### === 补充 `将 ARGB 转成 RGB 色值`
+
+上面的转换方式使用时发现有 BUG，变写了一个简单的转换函数。具体是添加一个背景色，新的色值为 `背景色 * （1-透明度） + 主色 * 透明度`，代码如下：
+
+```java
+/**
+ * 计算 ARGB + 背景色 的混合 RGB 色
+ * @param color     原始色
+ * @param bgColor   背景色
+ * @param alpha     透明度
+ * @return
+ */
+public static int convertColorAlpha(int color, int bgColor, int alpha) {
+    int[] colorArr = resolveColor(color);
+    int[] bgColorArr = resolveColor(bgColor);
+
+    float alphaPercent = alpha / 255f;
+    int[] colors = new int[4];
+    colors[0] = 0xFF;
+    for (int i = 1; i < 4; i++) {
+        colors[i] = (int) (bgColorArr[i]*(1-alphaPercent) + colorArr[i]*alphaPercent);
+    }
+    return argb(colors[0], colors[1], colors[2], colors[3]);
+}
+
+private static int[] resolveColor(int color) {
+    int[] colors = new int[4];
+    colors[0] = color >>> 24;
+    colors[1] = (color >> 16) & 0xFF;
+    colors[2] = (color >> 8) & 0xFF;
+    colors[3] = color & 0xFF;
+    return colors;
+}
+
+public static int argb(int alpha, int red, int green, int blue) {
+    return (alpha << 24) | (red << 16) | (green << 8) | blue;
+}
+```
+
+
+
 ### 三、参考链接
 
 Android自定义通知样式适配   <http://www.jianshu.com/p/426d85f34561>
