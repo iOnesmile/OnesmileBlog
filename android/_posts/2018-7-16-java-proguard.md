@@ -8,7 +8,7 @@ comments: true
 ---
 
 
-ProGuard 是开源的优化 Java 字节码工具。官方称可用减少 10% 体积，并提升 20% 运行效率。将类名、方法名、变量名混淆成a、b、c基本字母，一定程度上提高了发编译的难度。
+ProGuard 是开源的优化 Java 字节码工具。官方称可用减少 10% 体积，并提升 20% 运行效率。将类名、方法名、变量名混淆成a、b、c基本字母，一定程度上提高了反编译的难度。
 
 - 压缩（Shrinking）：从入口开始建立引用关系网，去除网外为使用的代码。
 
@@ -125,7 +125,7 @@ public @interface NotProguard {
 # 配置使用了 @NotProguard 注释的类不混淆
 -keep @xxx.xxx.NotProguard class * {*;}
 # 配置使用了 @NotProguard 注释的成员变量不混淆
--keep class * {
+-keepclassmembers class * {
 @xxx.xxx.NotProguard <fields>;
 }
 # 配置使用了 @NotProguard 注释的方法不混淆
@@ -133,3 +133,81 @@ public @interface NotProguard {
 @xxx.xxx.NotProguard <methods>;
 }
 ```
+
+
+### 六、使用经验补充
+
+> 使用版本：     
+> Gradle: gradle-4.1-all      
+> android.build: 2.3.2
+
+- 查看最终的混淆配置文件，如下代码配置输出路径
+
+	```
+	-printconfiguration "build/outputs/mapping/configuration.txt"
+	```
+
+	- 自动生成了 layout 中被引用 View 的构造函数不会混淆的规则
+
+		```
+		# view res/layout/fmxos_fragment_pay_track_list.xml #generated:14
+		-keep class com.fmxos.platform.ui.view.RichTextView {
+		    <init>(...);
+		}
+		```
+		
+		因此让继承了 View 的类不被混淆的规则是多余的，在代码中被引用的 View 依然可以混淆。
+		
+		
+	- 自动生成了使用 `@Keep` 不被混淆的规则，替代了前面提到的 `@NotProguard`
+
+		```
+		# Understand the @Keep support annotation.
+		-keep class android.support.annotation.Keep
+		
+		-keep @android.support.annotation.Keep class * {
+		    <fields>;
+		    <methods>;
+		}
+		
+		-keepclasseswithmembers class * {
+		    @android.support.annotation.Keep
+		    <methods>;
+		}
+		
+		-keepclasseswithmembers class * {
+		    @android.support.annotation.Keep
+		    <fields>;
+		}
+		
+		-keepclasseswithmembers class * {
+		    @android.support.annotation.Keep
+		    <init>(...);
+		}
+		```
+
+	- 自动生成了 `AndroidManifest` 文件中注册的四大组件类名不混淆规则
+
+		```
+		# view AndroidManifest.xml #generated:35
+		-keep class com.fmxos.platform.ui.activity.MusicPlayerActivity {
+		    <init>(...);
+		}
+		```
+
+	- 自动生成了 xml 文件中控件使用了 onclick 属性的方法不混淆规则
+
+		```
+		# onClick res/layout/fmxos_patch_music_player_control.xml #generated:8
+		-keepclassmembers class * {
+		    *** onClick(...);
+		}
+		```
+		
+	- 其它...
+
+	
+- Retrofit 的 service 接口定义的参数被 Shrinking，导致参数被删除。可以用 `-keepclassmembers` 保持这些参数。
+
+
+
